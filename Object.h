@@ -5,40 +5,50 @@
 using namespace std;
 using namespace cv;
 
-class Object
-{
+
+class Object {
 public:
 	Object();
-	~Object(void);
 
-	Object(string name);
+	~Object( void );
 
-	int getXPos();
-	void setXPos(int x);
+	Object( string name );
 
-	int getYPos();
-	void setYPos(int y);
+	int getXPos() const;
 
-	Scalar getHSVmin();
-	Scalar getHSVmax();
+	void setXPos( int x );
 
-	void setHSVmin(Scalar min);
-	void setHSVmax(Scalar max);
+	int getYPos() const;
 
-	string getType(){return type;}
-	void setType(string t){type = t;}
+	void setYPos( int y );
 
-	Scalar getColor(){
+	int getRadius() const { return radius; };
+
+	void setRadius( int r ) { radius = r; };
+
+	Scalar getHSVmin() const;
+
+	Scalar getHSVmax() const;
+
+	void setHSVmin( Scalar min );
+
+	void setHSVmax( Scalar max );
+
+	string getType() const { return type; }
+	void setType( string t ) { type = t; }
+
+	Scalar getColor() const {
 		return Color;
 	}
-	void setColor(Scalar c){
+
+	void setColor( Scalar c ) {
 
 		Color = c;
 	}
 
 private:
 
-	int xPos, yPos;
+	int xPos, yPos, radius;
 	string type;
 	Scalar HSVmin, HSVmax;
 	Scalar Color;
