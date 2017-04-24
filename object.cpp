@@ -2,54 +2,54 @@
 
 Object::Object() {
 	//set values for default constructor
-	setType("Object");
-	setColor(Scalar(0, 0, 0));
+	setType( "Object" );
+	setColor( cv::Scalar( 0, 0, 0 ) );
 
 }
 
-Object::Object(string name) {
+Object::Object( std::string name ) {
 
-	setType(name);
+	setType( name );
 
-	if (name == "green") {
+	if( name == "green" ) {
 
 		//TODO: use "calibration mode" to find HSV min
 		//and HSV max values
 
-		setHSVmin(Scalar(34, 50, 50));
-		setHSVmax(Scalar(102, 179, 200));
+		setHSVmin( cv::Scalar( 34, 50, 50 ) );
+		setHSVmax( cv::Scalar( 102, 179, 200 ) );
 
 		//BGR value fo r Green:
-		setColor(Scalar(0, 255, 0));
+		setColor( cv::Scalar( 0, 255, 0 ) );
 
 	}
-	if (name == "black") {
+	if( name == "black" ) {
 
 		//TODO: use "calibration mode" to find HSV min
 		//and HSV max values
 
-		setHSVmin(Scalar(0, 0, 0));
-		setHSVmax(Scalar(170, 256, 60));
+		setHSVmin( cv::Scalar( 0, 0, 0 ) );
+		setHSVmax( cv::Scalar( 170, 256, 60 ) );
 
 		//BGR value for Black:
-		setColor(Scalar(0, 0, 0));
+		setColor( cv::Scalar( 0, 0, 0 ) );
 
 	}
-	if (name == "red") {
+	if( name == "red" ) {
 
 		//TODO: use "calibration mode" to find HSV min
 		//and HSV max values
 
-		setHSVmin(Scalar(0, 21, 0));
-		setHSVmax(Scalar(18, 255, 255));
+		setHSVmin( cv::Scalar( 0, 21, 0 ) );
+		setHSVmax( cv::Scalar( 18, 255, 255 ) );
 
 		//BGR value for Red:
-		setColor(Scalar(0, 0, 255));
+		setColor( cv::Scalar( 0, 0, 255 ) );
 
 	}
 }
 
-Object::~Object(void) {}
+Object::~Object( void ) {}
 
 int Object::getXPos() const {
 
@@ -57,7 +57,7 @@ int Object::getXPos() const {
 
 }
 
-void Object::setXPos(int x) {
+void Object::setXPos( int x ) {
 
 	Object::xPos = x;
 
@@ -69,30 +69,30 @@ int Object::getYPos() const {
 
 }
 
-void Object::setYPos(int y) {
+void Object::setYPos( int y ) {
 
 	Object::yPos = y;
 
 }
 
-Scalar Object::getHSVmin() const {
+cv::Scalar Object::getHSVmin() const {
 
 	return Object::HSVmin;
 
 }
 
-Scalar Object::getHSVmax() const {
+cv::Scalar Object::getHSVmax() const {
 
 	return Object::HSVmax;
 }
 
-void Object::setHSVmin(Scalar min) {
+void Object::setHSVmin( cv::Scalar min ) {
 
 	Object::HSVmin = min;
 }
 
 
-void Object::setHSVmax(Scalar max) {
+void Object::setHSVmax( cv::Scalar max ) {
 
 	Object::HSVmax = max;
 }

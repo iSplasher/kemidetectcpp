@@ -1,6 +1,6 @@
 #include "circletracking.h"
 
-std::vector< Object > CircleTracking::getObjects() {
+std::vector< Object >& CircleTracking::getObjects() {
 	vector< Object > o;
 	process();
 	return o;

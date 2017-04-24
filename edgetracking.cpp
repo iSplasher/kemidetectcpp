@@ -1,9 +1,8 @@
 #include "edgetracking.h"
 
-std::vector< Object > EdgeTracking::getObjects() {
-	vector< Object > o;
+std::vector< Object >& EdgeTracking::getObjects() {
 	process( image );
-	return o;
+	return objects;
 }
 
 void EdgeTracking::process( Mat sourceFeed ) {
@@ -101,8 +100,8 @@ void EdgeTracking::morphOps( Mat& thresh ) {
 	dilate( thresh, thresh, dilateElement );
 }
 
-int EdgeTracking::trackFilteredObject( Mat threshold, Mat HSV, Mat& cameraFeed ) const {
-	vector< Object > objects;
+int EdgeTracking::trackFilteredObject( Mat threshold, Mat HSV, Mat& cameraFeed ) {
+	objects.clear();
 	Mat temp;
 	threshold.copyTo( temp );
 	//these two vectors needed for output of findContours
@@ -148,8 +147,8 @@ int EdgeTracking::trackFilteredObject( Mat threshold, Mat HSV, Mat& cameraFeed )
 	return objects.size();
 }
 
-int EdgeTracking::trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFeed ) const {
-	vector< Object > objects;
+int EdgeTracking::trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFeed ) {
+	objects.clear();
 	Mat temp;
 	threshold.copyTo( temp );
 	//these two vectors needed for output of findContours

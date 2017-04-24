@@ -8,3 +8,8 @@
 /Debug
 /packages/vcpkg.D.Code.vcpkg.1.0.0
 /x64/Debug
+*.sln
+*.vcxproj
+*.filters
+*.user
+*.config

@@ -3,7 +3,8 @@
 #include "edgetracking.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include <algorithm>  
+#include <map>
+#include <random>
 
 struct Skalle;
 
@@ -28,7 +29,7 @@ struct Drawable {
 struct Element : public Drawable {
 
 
-	Element( Type type, Point2d pos, Skalle* parent ) {
+	Element( Type type, cv::Point2d pos ) {
 		this->pos = pos;
 
 		this->type = type;
@@ -54,10 +55,13 @@ struct Element : public Drawable {
 		circle = sf::CircleShape( size );
 		letter.setCharacterSize( 12 );
 		letter.setFillColor( outline );
+		circle.setFillColor( sf::Color::White );
+		circle.setOutlineColor( outline );
+		circle.setOutlineThickness( 2 );
 	}
 
 	void draw( sf::RenderWindow& render ) override {
-		circle.setPosition( pos.x, pos.y );
+		circle.setPosition( pos.x - size, pos.y - size );
 		letter.setPosition( pos.x + size / 2, pos.y + size / 2 );
 
 		render.draw( letter );
@@ -65,7 +69,7 @@ struct Element : public Drawable {
 	}
 
 	Type type;
-	Point2d pos;
+	cv::Point2d pos;
 	sf::Color outline = sf::Color( 98, 98, 98 );
 	int size;
 	sf::CircleShape circle;
@@ -75,23 +79,43 @@ struct Element : public Drawable {
 
 struct Skalle : public Drawable {
 
-	Skalle( Point2d* centrum, int radius, sf::Color background ) {
-
+	Skalle( cv::Point2d* centrum, int radius, int antal_elementer, sf::Color background ) {
+		this->antal_elementer = antal_elementer;
 		this->background = background;
 		this->radius = radius;
 		this->centrum = centrum;
 		circle = sf::CircleShape( radius, 50 );
 	}
 
-	void addElektron( Point2d pos ) {
-		elektroner.push_back( Element( Elektron, pos, this ) );
+	void addElektron( int antal = 1 ) {
+		while( antal && antal > 0 ) {
+			if( elektronCount() < antal_elementer + 1 ) {
+				elektroner.push_back( Element( Elektron, cv::Point2d() ) );
+			}
+			antal--;
+		}
+		updateElektroner();
 	}
 
-	void removeElektron( Point2d pos ) {
-		elektroner.pop_back();
+	void removeElektron() {
+		if( elektronCount() > 0 ) {
+			elektroner.pop_back();
+		}
+		updateElektroner();
 	}
 
-	int electronCount() const { return elektroner.size(); }
+	void updateElektroner() {
+		auto rad = CV_2PI / antal_elementer;
+
+		int x = 1;
+		for( auto& e : elektroner ) {
+			e.pos.x = centrum->x + ( radius * std::cos( rad * x ) );
+			e.pos.y = centrum->y + ( radius * std::sin( rad * x ) );
+			x++;
+		}
+	}
+
+	int elektronCount() const { return elektroner.size(); }
 
 	void clear() {
 		elektroner.clear();
@@ -115,10 +139,11 @@ struct Skalle : public Drawable {
 
 	std::vector< Element > elektroner;
 	int nummer = 0;
-	Point2d* centrum;
+	int antal_elementer = 0;
+	cv::Point2d* centrum;
 	int radius;
 	sf::Color outline = sf::Color( 98, 98, 98 );
-	int outline_thickness = 8;
+	double outline_thickness = 0.5;
 	sf::Color background;
 	sf::CircleShape circle;
 };
@@ -130,78 +155,84 @@ struct AtomDetail : public Drawable {
 		pos.y = y;
 		size.x = width;
 		size.y = height;
+		this->font = &font;
 
 		rect = sf::RectangleShape( sf::Vector2f( width, height ) );
 
-		setElementCount( 0, Proton );
-		setElementCount( 0, Neutron );
-		setElementCount( 0, Elektron );
+		attrs = {
+					{ "Tilstand", getText( "Tilstand: Stabil" ) },
+					{ "Fase", getText( "Fase: Gas" ) },
+					{ "Densitet", getText( "Densitet: 0,08988 g/L" ) },
+					{ "Smeltepunkt", getText( "Smeltepunkt: -259,14 celsius" ) },
+					{ "Kogepunkt", getText( "Kogepunkt: -252,87 celsius" ) },
+					{ "Ladning", getText( "Ladning: Neutral" ) }
+			};
 
-		elektrontext.setFont( font );
-		protontext.setFont( font );
-		neutrontext.setFont( font );
-
+		sf::Image im;
+		im.create( img_size.x, img_size.y );
+		img.loadFromImage( im );
+		img_sprite.setTexture( img );
 	}
 
-	void setElementCount( int antal, Type type ) {
-		switch( type ) {
+	void setImage( std::string path ) {
+		img.loadFromFile( path );
+		img_sprite.setTexture( img );
+	}
 
-			case Elektron:
-				elektroner = antal;
-				elektrontext.setString( std::to_string( antal ) + " elektroner" );
-				break;
-			case Neutron:
-				protoner = antal;
-				protontext.setString( std::to_string( antal ) + " protoner" );
-				break;
-			case Proton:
-				neutroner = antal;
-				neutrontext.setString( std::to_string( antal ) + " neutroner" );
-				break;
-			default: ;
-		}
-	};
+	void setTextElement( std::string key, std::string txt ) {
+		attrs[ key ].setString( key + ": " + txt );
+	}
 
 	void draw( sf::RenderWindow& render ) override {
 		rect.setFillColor( background );
-		rect.setOutlineColor(background2);
 		rect.setPosition( pos.x, pos.y );
 		render.draw( rect );
 
 		auto y = size.y / 3;
 		auto xmargin = 10;
-		auto ymargin = 10;
-		protontext.setPosition( pos.x + xmargin, pos.y + ymargin );
-		neutrontext.setPosition( pos.x + xmargin, pos.y + y + ymargin );
-		elektrontext.setPosition( pos.x + xmargin, pos.y + y * 2 + ymargin );
-		protontext.setFillColor( foreground );
-		neutrontext.setFillColor( foreground2 );
-		elektrontext.setFillColor( foreground3 );
-		neutrontext.setCharacterSize( font_size );
-		protontext.setCharacterSize( font_size );
-		elektrontext.setCharacterSize( font_size );
+		auto ymargin = 30;
 
-		//render.draw( protontext );
-		//render.draw( neutrontext );
-		//render.draw( elektrontext );
+		auto s = img.getSize();
+
+		img_sprite.setPosition( pos.x + xmargin, 10 );
+
+		render.draw( img_sprite );
+
+		auto x = ymargin;
+		for( auto& key : attrs ) {
+			auto& txt = key.second;
+			txt.setPosition( pos.x + xmargin, pos.y + s.y + x );
+			txt.setFillColor( foreground );
+			x += ymargin;
+			render.draw( txt );
+		}
 
 	}
 
-	sf::Text elektrontext;
-	sf::Text neutrontext;
-	sf::Text protontext;
-	int elektroner = 0;
-	int protoner = 0;
-	int neutroner = 0;
-	Point2d pos;
-	Point2d size;
+	sf::Texture img;
+	sf::Sprite img_sprite;
+	cv::Point2d img_size = { 200, 150 };
+
+	std::map< std::string, sf::Text > attrs;
+
+	sf::Font* font;
+	cv::Point2d pos;
+	cv::Point2d size;
 	sf::RectangleShape rect;
 	sf::Color background = sf::Color( 206, 206, 206 );
-	sf::Color background2 = sf::Color(151, 151, 151);
 	sf::Color foreground = sf::Color( 3, 218, 114 );
-	sf::Color foreground2 = sf::Color( 46, 46, 46 );
-	sf::Color foreground3 = sf::Color( 246, 3, 43 );
-	unsigned font_size = 30;
+	unsigned font_size = 20;
+
+private:
+
+	sf::Text getText( std::string t ) const {
+		sf::Text txt;
+		txt.setString( t );
+		txt.setFont( *font );
+		txt.setCharacterSize( font_size );
+		return txt;
+	}
+
 };
 
 
@@ -213,44 +244,96 @@ struct AtomInfo : public Drawable {
 		size.y = height;
 
 		rect = sf::RectangleShape( sf::Vector2f( width, height ) );
+		atom_text = getText( "Navn: Hydrogen", font );
+		atom_numb = getText( "Nummer: 2", font );
+		atom_elek = getText( "Elektroner: 2", font );
+		atom_prot = getText( "Protoner: 5", font );
+		atom_neut = getText( "Neutroner: 10", font );
 	}
+
+	void setAtom( std::string txt, std::string nummer ) {
+		atom_text.setString( "Navn: " + txt );
+		atom_numb.setString( "Nummer: " + nummer );
+	}
+
+	void setElementCount( int antal, Type type ) {
+		switch( type ) {
+
+			case Elektron:
+				atom_elek.setString( "Elektroner" + std::to_string( antal ) );
+				break;
+			case Neutron:
+				atom_elek.setString( "Neutroner" + std::to_string( antal ) );
+				break;
+			case Proton:
+				atom_elek.setString( "Protoner" + std::to_string( antal ) );
+				break;
+			default: ;
+		}
+	};
 
 	void draw( sf::RenderWindow& render ) override {
 		rect.setFillColor( background );
 		rect.setPosition( pos.x, pos.y );
 		render.draw( rect );
 
-		int margin = 5;
+		int margin = 2;
+		int xmargin = 10;
+		int margin2 = 6;
 
-		// Atom Rect
-		atomrect.setFillColor( background2 );
-		atomrect.setSize( sf::Vector2f( margin * 2 - size.x, 100 ) );
-		atomrect.setPosition( pos.x + margin, pos.y + margin );
+		auto txt_height = atom_text.getLocalBounds().height;
+		atom_text.setPosition( pos.x + xmargin, pos.y + margin );
+		atom_prot.setPosition( pos.x + xmargin, pos.y + margin + margin2 + txt_height );
+		atom_neut.setPosition( pos.x + xmargin, pos.y + margin + margin2 + txt_height * 2 );
+		atom_elek.setPosition( pos.x + xmargin, pos.y + margin + margin2 + txt_height * 3 );
+
+		render.draw( atom_prot );
+		render.draw( atom_neut );
+		render.draw( atom_elek );
+		render.draw( atom_text );
 	}
 
-	Point2d pos;
-	Point2d size;
+	cv::Point2d pos;
+	cv::Point2d size;
 	sf::RectangleShape rect;
-	sf::RectangleShape atomrect;
-	sf::RectangleShape inforect;
+	sf::Text atom_numb;
+	sf::Text atom_text;
+	sf::Text atom_elek;
+	sf::Text atom_neut;
+	sf::Text atom_prot;
 	sf::Color background = sf::Color( 206, 206, 206 );
-	sf::Color background2 = sf::Color( 151, 151, 151 );
+	sf::Color foreground = sf::Color( 200, 6, 170 );
+
+private:
+
+	sf::Text getText( std::string t, sf::Font& font ) const {
+		sf::Text txt;
+		txt.setString( t );
+		txt.setFont( font );
+		txt.setCharacterSize( 28 );
+		txt.setFillColor( foreground );
+		return txt;
+	}
 };
 
 
 struct AtomCircle : public Drawable {
 
-	AtomCircle( double pos_x, double pos_y, double r, int skaller_antal = 3 ) {
+	AtomCircle( double pos_x, double pos_y, double r ) {
 		x = pos_x;
 		y = pos_y;
 		radius = r;
+		centrum.x = x + radius;
+		centrum.y = y + radius;
 
-		auto x = skaller_antal;
-		do {
-			auto s = Skalle( &centrum, ( radius / 3 ) * x, background );
-			skaller.push_back( s );
-			x -= 1;
-		} while( x );
+		auto skaller_antal = 4;
+		skaller.push_back( Skalle( &centrum, ( radius / skaller_antal ) * 4, 32, background ) );
+		skaller.push_back( Skalle( &centrum, ( radius / skaller_antal ) * 3, 18, background ) );
+		skaller.push_back( Skalle( &centrum, ( radius / skaller_antal ) * 2, 8, background ) );
+		skaller.push_back( Skalle( &centrum, ( radius / skaller_antal ) * 1, 2, background ) );
+
+		setElementCount( Proton, 20 );
+		setElementCount( Neutron, 20 );
 	}
 
 	virtual ~AtomCircle() {};
@@ -258,6 +341,22 @@ struct AtomCircle : public Drawable {
 	void clear() {
 		for( auto& s : skaller ) {
 			s.clear();
+		}
+	}
+
+	void setElementCount( Type type, int antal, int skalle = 0 ) {
+		switch( type ) {
+
+			case Elektron:
+				skaller[ skalle ].addElektron( antal );
+				break;
+			case Neutron:
+				addElements( type, neutroner, antal );
+				break;
+			case Proton:
+				addElements( type, protoner, antal );
+				break;
+			default: ;
 		}
 	}
 
@@ -286,33 +385,62 @@ struct AtomCircle : public Drawable {
 
 	std::vector< Element > neutroner;
 	std::vector< Element > protoner;
-	Point2d centrum;
+	cv::Point2d centrum;
 	sf::Color background = sf::Color( 206, 206, 206 );
 
 	std::vector< Skalle > skaller;
+
+	std::mt19937 rng;
+
+private:
+
+	double getRandom( double min, double max ) {
+		std::uniform_real_distribution< double > dist( min, max );
+		rng.seed( std::random_device{}() );
+		return dist( rng );
+	}
+
+	void addElements( Type type, std::vector< Element >& obj, int antal ) {
+		obj.clear();
+
+		while( antal ) {
+			auto real_radius = radius / skaller.size() - 10;
+
+			auto r_radius = getRandom( 0, real_radius );
+			auto r_angle = getRandom( 0, CV_2PI );
+
+			Point2d p;
+			p.x = centrum.x + std::cos( r_angle ) * r_radius;
+			p.y = centrum.y + std::cos( r_angle ) * r_radius;
+			obj.push_back( Element( type, p ) );
+			antal--;
+		}
+	}
 
 };
 
 
 int main( int argc, char* argv[] ) {
 
+	bool debug = false;
+
 	int width = 640, height = 480;
 
-	Mat sourceFeed;
-	Mat cameraFeed;
+	cv::Mat sourceFeed;
+	cv::Mat cameraFeed;
 
-	Rect crop(0, 0, 640, 480);
+	cv::Rect crop( 0, 0, 640, 480 );
 
 	//video capture object to acquire webcam feed
-	VideoCapture capture;
+	cv::VideoCapture capture;
 	//open capture object at location zero (default location for webcam)
 	const auto CAMERA_ID = 1;
 
-	capture.open(CAMERA_ID);
+	capture.open( CAMERA_ID );
 	//set height and width of capture frame
-	capture.set(CV_CAP_PROP_FRAME_WIDTH, width);
-	capture.set(CV_CAP_PROP_FRAME_HEIGHT, height);
-	waitKey(1000);
+	capture.set( CV_CAP_PROP_FRAME_WIDTH, width );
+	capture.set( CV_CAP_PROP_FRAME_HEIGHT, height );
+	cv::waitKey( 1000 );
 
 	auto track = EdgeTracking();
 	//track.showDebugWindows();
@@ -323,8 +451,10 @@ int main( int argc, char* argv[] ) {
 	sf::RenderWindow window( sf::VideoMode( width, height ), "KemiDetect", sf::Style::Default, settings );
 
 	sf::Font font;
-	if( !font.loadFromFile( "font/roboto.ttf" ) )
+	if( !font.loadFromFile( "font/roboto.ttf" ) ) {
+		std::cerr << "Could not load font: 'font/roboto.tff'" << std::endl;
 		return EXIT_FAILURE;
+	}
 
 	int margin = 0;
 	auto radius = ( ( width ) / 4 );
@@ -333,28 +463,39 @@ int main( int argc, char* argv[] ) {
 	AtomCircle atomcircle( atomcirle_x, atomcirle_y * 2 - radius - 10, radius );
 	int x = atomcircle.x + radius * 2;
 	int y = 10;
-	AtomInfo atominfo( y, 0, radius * 2+y, atomcirle_y * 1 - y * 3, font );
-	AtomDetail atomdetail( x + 10, margin, width - x - margin, height - margin*2, font );
+	AtomInfo atominfo( y, 0, radius * 2 + y, atomcirle_y * 1 - y * 3, font );
+	AtomDetail atomdetail( x + 10, margin, width - x - margin, height - margin * 2, font );
+	std::vector< Object > objects;
+	auto camera = false;
+	capture.read( sourceFeed );
+	if( sourceFeed.data ) {
+		camera = true;
+		cv::namedWindow( "Display", CV_WINDOW_AUTOSIZE );
+	}
 
 	while( window.isOpen() ) {
 
-		//store image to matrix
-		capture.read(sourceFeed);
-		if (!sourceFeed.data)
-		{
-			return -1;
+		capture.read( sourceFeed );
+		if( sourceFeed.data ) {
+			cameraFeed = sourceFeed( crop );
+			track.applyImage( cameraFeed );
+			objects = track.getObjects();
+
+			for( auto& o : objects ) {
+				auto t = o.getType();
+				if( t == "red" ) { } else if( t == "black" ) { } else
+				if( t == "green" ) { }
+			}
+
+			if( debug )
+				cv::imshow( "Display", track.getImage() );
 		}
-		cameraFeed = sourceFeed(crop);
-		track.applyImage(cameraFeed);
-		auto objects = track.getObjects();
-		namedWindow("Display", CV_WINDOW_AUTOSIZE);
-		imshow("Display", track.getImage());
 
 		// Process events
-		sf::Event event;
-		while( window.pollEvent( event ) ) {
+		sf::Event ev;
+		while( window.pollEvent( ev ) ) {
 			// Close window: exit
-			if( event.type == sf::Event::Closed )
+			if( ev.type == sf::Event::Closed )
 				window.close();
 		}
 		window.clear( sf::Color::White );

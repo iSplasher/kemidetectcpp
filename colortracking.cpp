@@ -1,6 +1,6 @@
 #include "colortracking.h"
 
-std::vector< Object > ColorTracking::getObjects() {
+std::vector< Object >& ColorTracking::getObjects() {
 	Object red( "red" ), black( "black" ), green( "green" );
 
 	addColorRange( red.getHSVmin(), red.getHSVmax() );

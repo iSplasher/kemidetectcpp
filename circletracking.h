@@ -10,7 +10,7 @@ public:
 
 	virtual ~CircleTracking() {}
 
-	std::vector< Object > getObjects() override;
+	std::vector< Object >& getObjects() override;
 
 private:
 

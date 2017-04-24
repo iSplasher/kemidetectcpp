@@ -16,7 +16,7 @@ public:
 
 	void openImage( std::string path );
 
-	virtual std::vector< Object > getObjects() = 0;
+	virtual std::vector< Object >& getObjects() = 0;
 
 	Mat getImage() const { return image; }
 

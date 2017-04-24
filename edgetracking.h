@@ -10,7 +10,7 @@ public:
 
 	virtual ~EdgeTracking() {}
 
-	std::vector< Object > getObjects() override;
+	std::vector< Object >& getObjects() override;
 
 private:
 
@@ -22,9 +22,9 @@ private:
 
 	static void morphOps( Mat& thresh );
 
-	int trackFilteredObject( Mat threshold, Mat HSV, Mat& cameraFeed ) const;
+	int trackFilteredObject( Mat threshold, Mat HSV, Mat& cameraFeed );
 
-	int trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFeed ) const;
+	int trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFeed );
 
 	//if we would like to calibrate our filter values, set to true.
 	bool calibrationMode = false;
@@ -41,6 +41,7 @@ private:
 	Mat cameraFeed;
 	Mat threshold;
 	Rect crop = Rect( 80, 0, 500, 480 );
+	vector< Object > objects;
 
 	//The following for canny edge detec
 	Mat dst, detected_edges;

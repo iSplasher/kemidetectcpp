@@ -10,7 +10,7 @@ public:
 
 	virtual ~ColorTracking() {}
 
-	std::vector< Object > getObjects() override;
+	std::vector< Object >& getObjects() override;
 
 	void addColorRange( Scalar from, Scalar to ) { color_ranges.push_back( ColorRange( from, to ) ); }
 
