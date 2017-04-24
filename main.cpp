@@ -3,7 +3,7 @@
 #include "edgetracking.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include <algorithm>
+#include <algorithm>  
 
 struct Skalle;
 
@@ -124,8 +124,8 @@ struct Skalle : public Drawable {
 };
 
 
-struct AtomCount : public Drawable {
-	AtomCount( int x, int y, int width, int height, sf::Font& font ) {
+struct AtomDetail : public Drawable {
+	AtomDetail( int x, int y, int width, int height, sf::Font& font ) {
 		pos.x = x;
 		pos.y = y;
 		size.x = width;
@@ -164,6 +164,7 @@ struct AtomCount : public Drawable {
 
 	void draw( sf::RenderWindow& render ) override {
 		rect.setFillColor( background );
+		rect.setOutlineColor(background2);
 		rect.setPosition( pos.x, pos.y );
 		render.draw( rect );
 
@@ -180,9 +181,9 @@ struct AtomCount : public Drawable {
 		protontext.setCharacterSize( font_size );
 		elektrontext.setCharacterSize( font_size );
 
-		render.draw( protontext );
-		render.draw( neutrontext );
-		render.draw( elektrontext );
+		//render.draw( protontext );
+		//render.draw( neutrontext );
+		//render.draw( elektrontext );
 
 	}
 
@@ -196,6 +197,7 @@ struct AtomCount : public Drawable {
 	Point2d size;
 	sf::RectangleShape rect;
 	sf::Color background = sf::Color( 206, 206, 206 );
+	sf::Color background2 = sf::Color(151, 151, 151);
 	sf::Color foreground = sf::Color( 3, 218, 114 );
 	sf::Color foreground2 = sf::Color( 46, 46, 46 );
 	sf::Color foreground3 = sf::Color( 246, 3, 43 );
@@ -303,7 +305,7 @@ int main( int argc, char* argv[] ) {
 	track.showDebugWindows();
 
 	waitKey( 0 );*/
-	int width = 1000, height = 800;
+	int width = 640, height = 480;
 
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
@@ -314,15 +316,15 @@ int main( int argc, char* argv[] ) {
 	if( !font.loadFromFile( "font/roboto.ttf" ) )
 		return EXIT_FAILURE;
 
-	auto radius = ( ( width * 2 ) / 4.5 ) / 2;
+	int margin = 0;
+	auto radius = ( ( width ) / 4 );
 	auto atomcirle_x = 20;
 	auto atomcirle_y = ( height / 3 );
-	AtomCircle atom( atomcirle_x, atomcirle_y * 2 - radius, radius );
-	int margin = 20;
-	int x = atom.x + radius * 2;
+	AtomCircle atomcircle( atomcirle_x, atomcirle_y * 2 - radius - 10, radius );
+	int x = atomcircle.x + radius * 2;
 	int y = 10;
-	AtomInfo atominfo( x + margin, y, width - x - margin * 2, height - margin * 2, font );
-	AtomCount atomcount( atomcirle_x, atomcirle_y * 1 - radius, radius * 2, radius, font );
+	AtomInfo atominfo( y, 0, radius * 2+y, atomcirle_y * 1 - y * 3, font );
+	AtomDetail atomdetail( x + 10, margin, width - x - margin, height - margin*2, font );
 
 	while( window.isOpen() ) {
 		// Process events
@@ -334,9 +336,9 @@ int main( int argc, char* argv[] ) {
 		}
 		window.clear( sf::Color::White );
 
-		atom.draw( window );
 		atominfo.draw( window );
-		atomcount.draw( window );
+		atomcircle.draw( window );
+		atomdetail.draw( window );
 
 		window.display();
 	}

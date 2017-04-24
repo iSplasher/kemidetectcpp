@@ -19,7 +19,7 @@ Object::Object( string name ) {
 		setHSVmin( Scalar( 34, 50, 50 ) );
 		setHSVmax( Scalar( 102, 179, 200 ) );
 
-		//BGR value for Green:
+		//BGR value fo r Green:
 		setColor( Scalar( 0, 255, 0 ) );
 
 	}
