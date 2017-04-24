@@ -295,17 +295,27 @@ struct AtomCircle : public Drawable {
 
 
 int main( int argc, char* argv[] ) {
-	/*auto track = EdgeTracking();
-	track.openImage( "kugle.jpg" );
-	track.getObjects();
 
-	namedWindow( "Display", CV_WINDOW_AUTOSIZE );
-	imshow( "Display", track.getImage() );
-
-	track.showDebugWindows();
-
-	waitKey( 0 );*/
 	int width = 640, height = 480;
+
+	Mat sourceFeed;
+	Mat cameraFeed;
+
+	Rect crop(0, 0, 640, 480);
+
+	//video capture object to acquire webcam feed
+	VideoCapture capture;
+	//open capture object at location zero (default location for webcam)
+	const auto CAMERA_ID = 1;
+
+	capture.open(CAMERA_ID);
+	//set height and width of capture frame
+	capture.set(CV_CAP_PROP_FRAME_WIDTH, width);
+	capture.set(CV_CAP_PROP_FRAME_HEIGHT, height);
+	waitKey(1000);
+
+	auto track = EdgeTracking();
+	//track.showDebugWindows();
 
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
@@ -327,6 +337,19 @@ int main( int argc, char* argv[] ) {
 	AtomDetail atomdetail( x + 10, margin, width - x - margin, height - margin*2, font );
 
 	while( window.isOpen() ) {
+
+		//store image to matrix
+		capture.read(sourceFeed);
+		if (!sourceFeed.data)
+		{
+			return -1;
+		}
+		cameraFeed = sourceFeed(crop);
+		track.applyImage(cameraFeed);
+		auto objects = track.getObjects();
+		namedWindow("Display", CV_WINDOW_AUTOSIZE);
+		imshow("Display", track.getImage());
+
 		// Process events
 		sf::Event event;
 		while( window.pollEvent( event ) ) {
