@@ -212,6 +212,9 @@ struct AtomDetail : public Drawable {
 		im.loadFromFile( path );
 		img.loadFromImage( im );
 		img_sprite.setTexture( img, true );
+		auto bounds = img_sprite.getLocalBounds();
+		auto scale = std::min( img_size.x / bounds.width, img_size.y / bounds.height );
+		img_sprite.setScale( scale, scale );
 	}
 
 	void setTextElement( std::string key, std::string txt ) {
@@ -227,16 +230,16 @@ struct AtomDetail : public Drawable {
 		auto xmargin = 10;
 		auto ymargin = 30;
 
-		auto s = img.getSize();
+		auto s = img_sprite.getGlobalBounds();
 
-		img_sprite.setPosition( pos.x + xmargin, 10 );
+		img_sprite.setPosition( pos.x + ( size.x / 2 ) - s.width / 2, 10 );
 
 		render.draw( img_sprite );
 
 		auto x = ymargin;
 		for( auto& key : attrs ) {
 			auto& txt = key.second;
-			txt.setPosition( pos.x + xmargin, pos.y + s.y + x );
+			txt.setPosition( pos.x + xmargin, pos.y + s.height + x );
 			txt.setFillColor( foreground );
 			x += ymargin;
 			render.draw( txt );
@@ -246,7 +249,7 @@ struct AtomDetail : public Drawable {
 
 	sf::Texture img;
 	sf::Sprite img_sprite;
-	cv::Point2d img_size = { 270, 150 };
+	cv::Point2d img_size = { 270, 200 };
 
 	std::map< std::string, sf::Text > attrs;
 
@@ -254,7 +257,7 @@ struct AtomDetail : public Drawable {
 	cv::Point2d pos;
 	cv::Point2d size;
 	sf::RectangleShape rect;
-	sf::Color background = sf::Color( 206, 206, 206 );
+	sf::Color background = sf::Color( 98, 98, 98 );
 	sf::Color foreground = sf::Color( 3, 218, 114 );
 	unsigned font_size = 20;
 
@@ -314,7 +317,9 @@ struct AtomInfo : public Drawable {
 	};
 
 	void draw( sf::RenderWindow& render ) override {
-		rect.setFillColor( background );
+		//rect.setFillColor(background);
+		rect.setOutlineThickness( 2 );
+		rect.setOutlineColor( background );
 		rect.setPosition( pos.x, pos.y );
 		render.draw( rect );
 
@@ -342,8 +347,8 @@ struct AtomInfo : public Drawable {
 	sf::Text atom_elek;
 	sf::Text atom_neut;
 	sf::Text atom_prot;
-	sf::Color background = sf::Color( 206, 206, 206 );
-	sf::Color foreground = sf::Color( 200, 6, 170 );
+	sf::Color background = sf::Color( 98, 98, 98 );
+	sf::Color foreground = sf::Color( 98, 98, 98 );
 
 private:
 
@@ -428,7 +433,7 @@ struct AtomCircle : public Drawable {
 	std::vector< Element > neutroner;
 	std::vector< Element > protoner;
 	cv::Point2d centrum;
-	sf::Color background = sf::Color( 206, 206, 206 );
+	sf::Color background = sf::Color::White;
 
 	std::vector< Skalle > skaller;
 
@@ -474,7 +479,7 @@ void setGrundstof( int nummer, AtomDetail& atomdetail, AtomInfo& atominfo ) {
 	auto txtfile = folder + "/" + "egenskaber.txt";
 	auto billede = folder + "/" + "billede.jpg";
 
-	//atomdetail.setImage( billede );
+	atomdetail.setImage( billede );
 
 	std::string line;
 	ifstream file( txtfile );
@@ -567,7 +572,7 @@ int main( int argc, char* argv[] ) {
 			objects = track.getObjects();
 
 			auto elektroner = 0;
-			auto protoner = 0;
+			auto protoner = -2;
 			auto neutroner = 0;
 
 			auto skalle1 = 0;
