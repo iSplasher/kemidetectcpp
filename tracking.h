@@ -1,8 +1,8 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
-#include <memory>
 #include <vector>
+#include <map>
 
 #include "object.h"
 
@@ -22,19 +22,22 @@ public:
 
 	void showDebugWindows();
 
+	void resetDebugWindows();
+
 protected:
 
-	void createDebugWindow( Mat im );
+	void createDebugWindow( Mat& im );
 
 	void convertBGRtoHSV();
 
 	cv::Mat image;
 	Mat hsv;
+	Mat gray;
 	Mat channels[3];
 
 private:
 	using DebugElement = std::pair< std::string, Mat >;
-	std::vector< DebugElement > debug_win;
+	std::map< std::string, Mat > debug_win;
 	unsigned debug_num = 0;
 
 };

@@ -16,8 +16,8 @@ Object::Object( std::string name ) {
 		//TODO: use "calibration mode" to find HSV min
 		//and HSV max values
 
-		setHSVmin( cv::Scalar( 34, 50, 50 ) );
-		setHSVmax( cv::Scalar( 102, 179, 200 ) );
+		setHSVmin( cv::Scalar( 34, 132, 58 ) );
+		setHSVmax( cv::Scalar( 256, 207, 256 ) );
 
 		//BGR value fo r Green:
 		setColor( cv::Scalar( 0, 255, 0 ) );
@@ -29,7 +29,7 @@ Object::Object( std::string name ) {
 		//and HSV max values
 
 		setHSVmin( cv::Scalar( 0, 0, 0 ) );
-		setHSVmax( cv::Scalar( 170, 256, 60 ) );
+		setHSVmax( cv::Scalar( 70, 256, 20 ) );
 
 		//BGR value for Black:
 		setColor( cv::Scalar( 0, 0, 0 ) );
@@ -40,8 +40,8 @@ Object::Object( std::string name ) {
 		//TODO: use "calibration mode" to find HSV min
 		//and HSV max values
 
-		setHSVmin( cv::Scalar( 0, 21, 0 ) );
-		setHSVmax( cv::Scalar( 18, 255, 255 ) );
+		setHSVmin( cv::Scalar( 0, 100, 0 ) );
+		setHSVmax( cv::Scalar( 4, 255, 255 ) );
 
 		//BGR value for Red:
 		setColor( cv::Scalar( 0, 0, 255 ) );

@@ -1,0 +1,5 @@
+Navn: Fosfor
+Tilstandsform: Fast stof
+Smeltepunkt: 44,2 °C
+Kogepunkt: 280,5 °C
+Massefylde: 1,823 g/cm3

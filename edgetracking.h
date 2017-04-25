@@ -18,11 +18,8 @@ private:
 
 	void drawObject( vector< Object > theObjects, Mat& frame, Mat& temp, vector< vector< Point > > contours, vector< Vec4i > hierarchy ) const;
 
-	void drawObject( vector< Object > theObjects, Mat& frame ) const;
 
 	static void morphOps( Mat& thresh );
-
-	int trackFilteredObject( Mat threshold, Mat HSV, Mat& cameraFeed );
 
 	int trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFeed );
 
@@ -40,7 +37,6 @@ private:
 	Mat sourceFeed;
 	Mat cameraFeed;
 	Mat threshold;
-	Rect crop = Rect( 80, 0, 500, 480 );
 	vector< Object > objects;
 
 	//The following for canny edge detec
@@ -53,7 +49,7 @@ private:
 	int kernel_size = 3;
 	const char* window_name = "Edge Map";
 
-	const int MAX_NUM_OBJECTS = 100;
+	const int MAX_NUM_OBJECTS = 200;
 	//minimum and maximum object area
 	const int MIN_OBJECT_AREA = 10 * 10;
 

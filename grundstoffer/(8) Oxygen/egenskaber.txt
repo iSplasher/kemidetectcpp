@@ -1,0 +1,5 @@
+Navn: Oxygen
+Tilstandform: Gas
+Smeltepunkt: -218,3 °C
+Kogepunkt: -182,9 °C
+Massefylde: 1,429 g/L

@@ -1,0 +1,5 @@
+Navn: Argon
+Tilstandsform: Gas
+Smeltepunkt: 63,38 °C
+Kogepunkt: 759 °C
+Massefylde: 0,89 g/cm3 (fast), 0,828 g/cm3 (væske)

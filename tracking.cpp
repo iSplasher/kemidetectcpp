@@ -16,11 +16,18 @@ void Tracking::showDebugWindows() {
 	}
 }
 
-void Tracking::createDebugWindow( Mat im ) {
+void Tracking::resetDebugWindows() {
+	debug_num = 0;
+}
+
+void Tracking::createDebugWindow( Mat& im ) {
 	auto winname = "Debug " + std::to_string( debug_num );
-	namedWindow( winname, CV_WINDOW_AUTOSIZE );
+	if( !debug_win.count( winname ) )
+		namedWindow( winname, CV_WINDOW_AUTOSIZE );
 	debug_num += 1;
-	debug_win.push_back( DebugElement( winname, im ) );
+	Mat im2;
+	im.copyTo( im2 );
+	debug_win[ winname ] = im2;
 }
 
 void Tracking::convertBGRtoHSV() {

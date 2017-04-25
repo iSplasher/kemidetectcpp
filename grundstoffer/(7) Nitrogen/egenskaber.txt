@@ -1,0 +1,5 @@
+Navn: Nitrogen
+Tilstandform: Gas
+Smeltepunkt: -210,1 °C
+Kogepunkt: -195,79 °C
+Massefylde: 1,251 g/L

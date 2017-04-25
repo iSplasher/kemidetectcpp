@@ -1,0 +1,5 @@
+Navn: Calcium
+Tilstandsform: Fast stof
+Smeltepunkt: 842 °C
+Kogepunkt: 1484 °C
+Massefylde: 1,55 g/cm3 (fast), 1,378 g/cm3 (væske)
