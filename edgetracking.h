@@ -16,9 +16,6 @@ private:
 
 	void process( Mat );
 
-	void drawObject( vector< Object > theObjects, Mat& frame, Mat& temp, vector< vector< Point > > contours, vector< Vec4i > hierarchy ) const;
-
-
 	static void morphOps( Mat& thresh );
 
 	int trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFeed );
@@ -51,7 +48,8 @@ private:
 
 	const int MAX_NUM_OBJECTS = 200;
 	//minimum and maximum object area
-	const int MIN_OBJECT_AREA = 10 * 10;
+	const int MIN_OBJECT_AREA = 1 * 1;
+	const int MAX_OBJECT_AREA = 20 * 20;
 
 
 };

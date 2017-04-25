@@ -5,9 +5,9 @@
 #include <map>
 #include <random>
 
-bool debug = true;
-
 struct Skalle;
+
+bool debug = true;
 
 
 enum Type {
@@ -61,17 +61,17 @@ struct Element : public Drawable {
 		switch( type ) {
 			case Elektron:
 				outline = sf::Color( 255, 0, 0 );
-				size = 3;
+				size = 2;
 				letter.setString( "E" );
 				break;
 			case Neutron:
 				outline = sf::Color( 0, 0, 0 );
-				size = 5;
+				size = 4;
 				letter.setString( "N" );
 				break;
 			case Proton:
 				outline = sf::Color( 56, 235, 60 );
-				size = 5;
+				size = 4;
 				letter.setString( "P" );
 				break;
 			default: ;
@@ -114,7 +114,7 @@ struct Skalle : public Drawable {
 
 	void addElektron( int antal = 1 ) {
 		while( antal && antal > 0 ) {
-			if( elektronCount() < antal_elementer + 1 ) {
+			if( elektronCount() < antal_elementer ) {
 				elektroner.push_back( Element( Elektron, cv::Point2d() ) );
 			}
 			antal--;
@@ -130,7 +130,7 @@ struct Skalle : public Drawable {
 	}
 
 	void updateElektroner() {
-		auto rad = CV_2PI / antal_elementer;
+		auto rad = CV_2PI / elektroner.size();
 
 		int x = 1;
 		for( auto& e : elektroner ) {
@@ -389,6 +389,7 @@ struct AtomCircle : public Drawable {
 		switch( type ) {
 
 			case Elektron:
+				skaller[ skalle ].clear();
 				skaller[ skalle ].addElektron( antal );
 				break;
 			case Neutron:
@@ -445,14 +446,20 @@ private:
 		obj.clear();
 
 		while( antal ) {
-			auto real_radius = radius / skaller.size() - 10;
+			auto real_radius = radius / skaller.size() - 15;
 
-			auto r_radius = getRandom( 0, real_radius );
-			auto r_angle = getRandom( 0, CV_2PI );
+			auto a = getRandom( 0, 1 );
+			auto b = getRandom( 0, 1 );
+
+			if( b < a ) {
+				auto x = a;
+				a = b;
+				b = x;
+			}
 
 			Point2d p;
-			p.x = centrum.x + std::cos( r_angle ) * r_radius;
-			p.y = centrum.y + std::cos( r_angle ) * r_radius;
+			p.x = b * real_radius * std::cos( CV_2PI * a / b ) + centrum.x;
+			p.y = b * real_radius * std::sin( CV_2PI * a / b ) + centrum.y;
 			obj.push_back( Element( type, p ) );
 			antal--;
 		}
@@ -550,7 +557,7 @@ int main( int argc, char* argv[] ) {
 
 		//capture.read( sourceFeed );
 
-		if( debug ) {
+		if( debug && !camera ) {
 			sourceFeed = imread( "kugle.jpg" );
 		}
 
@@ -563,12 +570,13 @@ int main( int argc, char* argv[] ) {
 			auto protoner = 0;
 			auto neutroner = 0;
 
+			auto skalle1 = 0;
+			auto skalle2 = 0;
+			auto skalle3 = 0;
+			auto skalle4 = 0;
+
 			for( auto& o : objects ) {
 				auto t = o.getType();
-				auto skalle1 = 0;
-				auto skalle2 = 0;
-				auto skalle3 = 0;
-				auto skalle4 = 0;
 
 				if( t == "red" ) {
 					elektroner++;
@@ -593,13 +601,12 @@ int main( int argc, char* argv[] ) {
 				} else if( t == "green" ) {
 					protoner++;
 				}
-
-				atomcircle.setElementCount( Elektron, skalle1, 3 );
-				atomcircle.setElementCount( Elektron, skalle2, 2 );
-				atomcircle.setElementCount( Elektron, skalle3, 1 );
-				atomcircle.setElementCount( Elektron, skalle4, 0 );
-
 			}
+
+			atomcircle.setElementCount( Elektron, skalle1, 3 );
+			atomcircle.setElementCount( Elektron, skalle2 + 10, 2 );
+			atomcircle.setElementCount( Elektron, skalle3, 1 );
+			atomcircle.setElementCount( Elektron, skalle4, 0 );
 
 			atomcircle.setElementCount( Proton, protoner );
 			atomcircle.setElementCount( Neutron, neutroner );

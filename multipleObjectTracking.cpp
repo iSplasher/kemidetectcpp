@@ -31,9 +31,9 @@ int V_MAX = 256;
 const int FRAME_WIDTH = 640;
 const int FRAME_HEIGHT = 480;
 //max number of objects to be detected in frame
-const int MAX_NUM_OBJECTS = 100;
+const int MAX_NUM_OBJECTS = 150;
 //minimum and maximum object area
-const int MIN_OBJECT_AREA = 2 * 2;
+const int MIN_OBJECT_AREA = 1 * 1;
 const int MAX_OBJECT_AREA = 20 * 20;
 //names that will appear at the top of each window
 const string windowName = "Original Image";
@@ -226,7 +226,7 @@ int trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFe
 
 int main( int argc, char* argv[] ) {
 	//if we would like to calibrate our filter values, set to true.
-	bool calibrationMode = true;
+	bool calibrationMode = false;
 
 	//Matrix to store each frame of the webcam feed
 	Mat sourceFeed;
@@ -293,25 +293,27 @@ int main( int argc, char* argv[] ) {
 		} else {
 			//create some temp fruit objects so that
 			//we can use their member functions/information
-			Object black( "black" ), red( "red" ), green( "green" );
+			Object black( "black" ), red( "red" ), green( "green" ), yellow( "yellow" );
 
 			//first find black objects
-			cvtColor( cameraFeed, HSV, COLOR_BGR2HSV );
 			inRange( HSV, black.getHSVmin(), black.getHSVmax(), threshold );
 			morphOps( threshold );
 			auto black_count = trackFilteredObject( black, threshold, HSV, cameraFeed );
 			//then reds
-			cvtColor( cameraFeed, HSV, COLOR_BGR2HSV );
 			inRange( HSV, red.getHSVmin(), red.getHSVmax(), threshold );
 			morphOps( threshold );
 			auto red_count = trackFilteredObject( red, threshold, HSV, cameraFeed );
 			//then greens
-			cvtColor( cameraFeed, HSV, COLOR_BGR2HSV );
 			inRange( HSV, green.getHSVmin(), green.getHSVmax(), threshold );
 			morphOps( threshold );
 			auto green_count = trackFilteredObject( green, threshold, HSV, cameraFeed );
+			//then yellow
+			inRange( HSV, yellow.getHSVmin(), yellow.getHSVmax(), threshold );
+			morphOps( threshold );
+			auto yellow_count = trackFilteredObject( yellow, threshold, HSV, cameraFeed );
 
-			std::cout << "Black: " << black_count << " Red: " << red_count << " Green: " << green_count << std::endl;
+			std::cout << "Black: " << black_count << " Red: " << red_count << " Green: " << green_count
+					<< " Yellow: " << yellow_count << std::endl;
 
 		}
 		//show frames

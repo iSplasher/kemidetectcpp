@@ -9,9 +9,11 @@ void Tracking::openImage( std::string path ) {
 }
 
 void Tracking::showDebugWindows() {
-	for( auto p : debug_win ) {
-		if( !p.second.empty() ) {
-			imshow( p.first, p.second );
+	if( debug ) {
+		for( auto p : debug_win ) {
+			if( !p.second.empty() ) {
+				imshow( p.first, p.second );
+			}
 		}
 	}
 }
@@ -21,13 +23,15 @@ void Tracking::resetDebugWindows() {
 }
 
 void Tracking::createDebugWindow( Mat& im ) {
-	auto winname = "Debug " + std::to_string( debug_num );
-	if( !debug_win.count( winname ) )
-		namedWindow( winname, CV_WINDOW_AUTOSIZE );
-	debug_num += 1;
-	Mat im2;
-	im.copyTo( im2 );
-	debug_win[ winname ] = im2;
+	if( debug ) {
+		auto winname = "Debug " + std::to_string( debug_num );
+		if( !debug_win.count( winname ) )
+			namedWindow( winname, CV_WINDOW_AUTOSIZE );
+		debug_num += 1;
+		Mat im2;
+		im.copyTo( im2 );
+		debug_win[ winname ] = im2;
+	}
 }
 
 void Tracking::convertBGRtoHSV() {

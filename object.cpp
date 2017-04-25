@@ -4,7 +4,7 @@ Object::Object() {
 	//set values for default constructor
 	setType( "Object" );
 	setColor( cv::Scalar( 0, 0, 0 ) );
-
+	skalle = -1;
 }
 
 Object::Object( std::string name ) {
@@ -17,7 +17,7 @@ Object::Object( std::string name ) {
 		//and HSV max values
 
 		setHSVmin( cv::Scalar( 34, 132, 58 ) );
-		setHSVmax( cv::Scalar( 256, 207, 256 ) );
+		setHSVmax( cv::Scalar( 256, 170, 256 ) );
 
 		//BGR value fo r Green:
 		setColor( cv::Scalar( 0, 255, 0 ) );
@@ -29,7 +29,7 @@ Object::Object( std::string name ) {
 		//and HSV max values
 
 		setHSVmin( cv::Scalar( 0, 0, 0 ) );
-		setHSVmax( cv::Scalar( 70, 256, 20 ) );
+		setHSVmax( cv::Scalar( 39, 160, 20 ) );
 
 		//BGR value for Black:
 		setColor( cv::Scalar( 0, 0, 0 ) );
@@ -41,12 +41,26 @@ Object::Object( std::string name ) {
 		//and HSV max values
 
 		setHSVmin( cv::Scalar( 0, 100, 0 ) );
-		setHSVmax( cv::Scalar( 4, 255, 255 ) );
+		setHSVmax( cv::Scalar( 12, 256, 256 ) );
 
 		//BGR value for Red:
 		setColor( cv::Scalar( 0, 0, 255 ) );
 
 	}
+
+	if( name == "yellow" ) {
+
+		//TODO: use "calibration mode" to find HSV min
+		//and HSV max values
+
+		setHSVmin( cv::Scalar( 0, 100, 135 ) );
+		setHSVmax( cv::Scalar( 40, 256, 256 ) );
+
+		//BGR value for Red:
+		setColor( cv::Scalar( 0, 255, 255 ) );
+
+	}
+
 }
 
 Object::~Object( void ) {}

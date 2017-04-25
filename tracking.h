@@ -9,7 +9,10 @@
 
 class Tracking {
 public:
-	Tracking() {}
+	Tracking( bool debug = false ) {
+		this->debug = debug;
+	}
+
 	virtual ~Tracking() {}
 
 	void applyImage( cv::Mat im );
@@ -36,6 +39,8 @@ protected:
 	Mat channels[3];
 
 private:
+
+	bool debug;
 	using DebugElement = std::pair< std::string, Mat >;
 	std::map< std::string, Mat > debug_win;
 	unsigned debug_num = 0;
