@@ -1,5 +1,5 @@
-﻿Navn: Carbon
+Navn: Carbon
 Tilstandsform: Fast stof
-Smeltepunkt: 2,26 g/cm3
+Smeltepunkt: 4027 °C
 Kogepunkt: 3550 °C
-Massefylde: 4027 °C
+Massefylde: 2,26 g/cm3
