@@ -1,5 +1,5 @@
-﻿Navn: Helium
+Navn: Helium
 Tilstandsform: Gas
 Smeltepunkt: −272,2 °C
 Kogepunkt: −268,93 °C
-Massefylde: 0,1785 kg·m−3 (fast)
+Massefylde: 0,1785 g/L
