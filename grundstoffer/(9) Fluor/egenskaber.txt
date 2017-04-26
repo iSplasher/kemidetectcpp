@@ -1,5 +1,5 @@
-﻿Navn: Flour
+Navn: Fluor
 Tilstandsform: Gas
-Smeltepunkt: -219.6 °C
-Kogepunkt: -188.12 °C
+Smeltepunkt: -219,6 °C
+Kogepunkt: -188,12 °C
 Massefylde: 1,696 g/L
