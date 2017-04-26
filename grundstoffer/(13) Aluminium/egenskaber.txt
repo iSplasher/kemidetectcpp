@@ -1,4 +1,4 @@
-﻿Navn: Aluminium
+Navn: Aluminium
 Tilstandsform: Fast stof
 Smeltepunkt: 660,32 °C
 Kogepunkt: 2519 °C

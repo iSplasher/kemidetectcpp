@@ -1,4 +1,4 @@
-﻿Navn: Magnesium
+Navn: Magnesium
 Tilstandsform: Fast stof
 Smeltepunkt: 650 °C
 Kogepunkt: 1090 °C

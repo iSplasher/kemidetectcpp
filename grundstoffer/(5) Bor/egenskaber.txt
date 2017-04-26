@@ -1,5 +1,6 @@
-﻿Navn: Bor
+Navn: Bor
 Tilstandsform: Fast stof
 Smeltepunkt: 2075 °C
 Kogepunkt: 4000 °C
 Massefylde: 2,46 g/cm3
+Isotop: 7,8,9,10,11,12,13,14,15,16,17,18,19

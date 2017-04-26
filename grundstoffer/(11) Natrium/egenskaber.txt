@@ -1,5 +1,6 @@
-﻿Navn: Natrium
+Navn: Natrium
 Tilstandsform: Fast stof
 Smeltepunkt: 97,72 °C
 Kogepunkt: 883 °C
 Massefylde: 0,968 g/cm3
+Isotop: 19,20

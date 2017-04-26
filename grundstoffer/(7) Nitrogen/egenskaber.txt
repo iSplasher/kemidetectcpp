@@ -1,5 +1,6 @@
-﻿Navn: Nitrogen
+Navn: Nitrogen
 Tilstandform: Gas
 Smeltepunkt: -210,1 °C
 Kogepunkt: -195,79 °C
 Massefylde: 1,251 g/L
+Isotop: 11,12,13,14,15,16,17,18,19,20

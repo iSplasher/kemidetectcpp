@@ -1,5 +1,6 @@
-﻿Navn: Oxygen
+Navn: Oxygen
 Tilstandform: Gas
 Smeltepunkt: -218,3 °C
 Kogepunkt: -182,9 °C
 Massefylde: 1,429 g/L
+Isotop: 13,14,15,16,17,18,19,20

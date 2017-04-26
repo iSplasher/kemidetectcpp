@@ -1,5 +1,6 @@
-﻿Navn: Beryllium
+Navn: Beryllium
 Tilstandsform: Fast stof
 Smeltepunkt: 1278,0 °C
 Kogepunkt: 2970,0 °C
-Massefylde: 1,8477 g/cm3
+Massefylde: 1,848 g/cm3
+Isotop: 6,7,8,9,10,11,12,13,14,15,16

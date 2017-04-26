@@ -1,5 +1,6 @@
-﻿Navn: Neon
+Navn: Neon
 Tilstandsform: Gas
 Smeltepunkt: -248,59 °C
 Kogepunkt: -246,08 °C
 Massefylde: 0,9 g/L
+Isotop: 17,18,19,20
