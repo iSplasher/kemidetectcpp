@@ -1,4 +1,4 @@
-﻿Navn: Bor
+Navn: Bor
 Tilstandsform: Fast stof
 Smeltepunkt: 2075 °C
 Kogepunkt: 4000 °C
