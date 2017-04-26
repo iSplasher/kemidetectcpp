@@ -2,4 +2,4 @@ Navn: Hydrogen
 Tilstandsform: Gas
 Smeltepunkt: −259,14 celsius
 Kogepunkt: −252,87 celsius
-Massefylde: 0,08988 g/L (gas)
+Massefylde: 0,08988 g/L
