@@ -6,7 +6,7 @@
 class EdgeTracking : public Tracking {
 public:
 
-	EdgeTracking() {}
+	EdgeTracking( bool debug = false ) : Tracking( debug ) {}
 
 	virtual ~EdgeTracking() {}
 

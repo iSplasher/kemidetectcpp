@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <map>
 #include <random>
+#include <sstream>
+#include <codecvt>
 
 struct Skalle;
 
@@ -174,6 +176,12 @@ struct Skalle : public Drawable {
 };
 
 
+std::wstring utf8_to_wstring( const std::string& str ) {
+	std::wstring_convert< std::codecvt_utf8< wchar_t > > myconv;
+	return myconv.from_bytes( str );
+}
+
+
 struct AtomDetail : public Drawable {
 	AtomDetail( int x, int y, int width, int height, sf::Font& font ) {
 		pos.x = x;
@@ -185,13 +193,16 @@ struct AtomDetail : public Drawable {
 		rect = sf::RectangleShape( sf::Vector2f( width, height ) );
 
 		attrs = {
-					{ "Tilstandsform", getText( "Tilstandsform: Ukendt" ) },
-					{ "Massefylde", getText( "Massefylde: Ukendt" ) },
-					{ "Smeltepunkt", getText( "Smeltepunkt: Ukendt" ) },
-					{ "Kogepunkt", getText( "Kogepunkt: Ukendt" ) },
-					{ "Ladning", getText( "Ladning: Ukendt" ) },
-					{ "Isotop", getText( "Isotop: Ukendt" ) }
+					{ L"Tilstandsform", getText( L"Tilstandsform: Ukendt" ) },
+					{ L"Massefylde", getText( L"Massefylde: Ukendt" ) },
+					{ L"Smeltepunkt", getText( L"Smeltepunkt: Ukendt" ) },
+					{ L"Kogepunkt", getText( L"Kogepunkt: Ukendt" ) },
+					{ L"Ladning", getText( L"Ladning: Ukendt" ) },
+					{ L"Isotop", getText( L"Isotop: Ukendt" ) }
 			};
+
+		exist_text = getText( L"Isotop eksistere ikke" );
+		exist_text.setFillColor( sf::Color::Red );
 
 		sf::Image im;
 		im.create( img_size.x, img_size.y );
@@ -203,7 +214,7 @@ struct AtomDetail : public Drawable {
 
 	void setDefault() {
 		for( auto& m : attrs ) {
-			m.second.setString( m.first + ": " + "Ukendt" );
+			m.second.setString( m.first + L": " + L"Ukendt" );
 		}
 	}
 
@@ -217,8 +228,8 @@ struct AtomDetail : public Drawable {
 		img_sprite.setScale( scale, scale );
 	}
 
-	void setTextElement( std::string key, std::string txt ) {
-		attrs[ key ].setString( key + ": " + txt );
+	void setTextElement( std::wstring key, std::wstring txt ) {
+		attrs[ key ].setString( key + L": " + txt );
 	}
 
 	void draw( sf::RenderWindow& render ) override {
@@ -245,13 +256,21 @@ struct AtomDetail : public Drawable {
 			render.draw( txt );
 		}
 
+		if( dont_exist ) {
+			exist_text.setPosition( pos.x + 10, pos.y + size.y - exist_text.getLocalBounds().height * 2 );
+			render.draw( exist_text );
+
+		}
 	}
+
+	bool dont_exist = false;
+	sf::Text exist_text;
 
 	sf::Texture img;
 	sf::Sprite img_sprite;
 	cv::Point2d img_size = { 270, 200 };
 
-	std::map< std::string, sf::Text > attrs;
+	std::map< std::wstring, sf::Text > attrs;
 
 	sf::Font* font;
 	cv::Point2d pos;
@@ -263,7 +282,7 @@ struct AtomDetail : public Drawable {
 
 private:
 
-	sf::Text getText( std::string t ) const {
+	sf::Text getText( std::wstring t ) const {
 		sf::Text txt;
 		txt.setString( t );
 		txt.setFont( *font );
@@ -282,39 +301,43 @@ struct AtomInfo : public Drawable {
 		size.y = height;
 
 		rect = sf::RectangleShape( sf::Vector2f( width, height ) );
-		atom_text = getText( "Navn: Ukendt", font );
-		atom_numb = getText( "Nummer: 2", font );
-		atom_elek = getText( "Elektroner: 2", font );
-		atom_prot = getText( "Protoner: 5", font );
-		atom_neut = getText( "Neutroner: 10", font );
+		atom_text = getText( L"Navn: Ukendt", font );
+		atom_numb = getText( L"Nummer: 2", font );
+		atom_elek = getText( L"Elektroner: 2", font );
+		atom_prot = getText( L"Protoner: 5", font );
+		atom_neut = getText( L"Neutroner: 10", font );
 		setDefault();
 	}
 
 	void setDefault() {
-		atom_text.setString( "Navn: Ukendt" );
-		atom_numb.setString( "Nummer: Ukendt" );
+		atom_text.setString( L"Navn: Ukendt" );
+		atom_numb.setString( L"Nummer: Ukendt" );
 	}
 
-	void setAtom( std::string txt, std::string nummer ) {
-		atom_text.setString( "Navn: " + txt );
-		atom_numb.setString( "Nummer: " + nummer );
+	void setAtom( std::wstring txt, std::wstring nummer ) {
+		atom_text.setString( L"Navn: " + txt );
+		atom_numb.setString( L"Nummer: " + nummer );
 	}
 
 	void setElementCount( int antal, Type type ) {
 		switch( type ) {
 
 			case Elektron:
-				atom_elek.setString( "Elektroner: " + std::to_string( antal ) );
+				atom_elek.setString( L"Elektroner: " + std::to_wstring( antal ) );
 				break;
 			case Neutron:
-				atom_neut.setString( "Neutroner: " + std::to_string( antal ) );
+				atom_neut.setString( L"Neutroner: " + std::to_wstring( antal ) );
 				break;
 			case Proton:
-				atom_prot.setString( "Protoner: " + std::to_string( antal ) );
+				atom_prot.setString( L"Protoner: " + std::to_wstring( antal ) );
 				break;
 			default: ;
 		}
 	};
+
+	bool hasIsotop( int neutroner ) {
+		return std::any_of( isotoper.begin(), isotoper.end(), [&](int i) { return i == neutroner; } );
+	}
 
 	void draw( sf::RenderWindow& render ) override {
 		//rect.setFillColor(background);
@@ -338,6 +361,7 @@ struct AtomInfo : public Drawable {
 		render.draw( atom_text );
 	}
 
+	std::vector< int > isotoper;
 	cv::Point2d pos;
 	cv::Point2d size;
 	sf::RectangleShape rect;
@@ -352,7 +376,7 @@ struct AtomInfo : public Drawable {
 
 private:
 
-	sf::Text getText( std::string t, sf::Font& font ) const {
+	sf::Text getText( std::wstring t, sf::Font& font ) const {
 		sf::Text txt;
 		txt.setString( t );
 		txt.setFont( font );
@@ -473,6 +497,14 @@ private:
 };
 
 
+std::wstring readFile( const char* filename ) {
+	std::wifstream wif( filename );
+	wif.imbue( std::locale( std::locale::empty(), new codecvt_utf8< wchar_t > ) );
+	std::wstringstream wss;
+	wss << wif.rdbuf();
+	return wss.str();
+}
+
 void setGrundstof( int nummer, AtomDetail& atomdetail, AtomInfo& atominfo ) {
 	std::string root = "grundstoffer";
 	auto folder = root + "/" + grundstoffer[ nummer ];
@@ -480,23 +512,40 @@ void setGrundstof( int nummer, AtomDetail& atomdetail, AtomInfo& atominfo ) {
 	auto billede = folder + "/" + "billede.jpg";
 
 	atomdetail.setImage( billede );
+	atominfo.isotoper.clear();
 
-	std::string line;
-	ifstream file( txtfile );
-	auto delimeter = ": ";
+	std::wstring line;
+	wifstream file( txtfile );
+	auto delimeter = L": ";
+	std::wstringstream ss;
 	if( file.is_open() ) {
-		while( getline( file, line ) ) {
+		file.imbue( locale( file.getloc(), new codecvt_utf8< wchar_t, 0x10ffff, consume_header >() ) );
+
+		std::wstringstream file_cnt;
+		file_cnt << file.rdbuf();
+
+		while( getline( file_cnt, line ) ) {
 			auto key = line.substr( 0, line.find( delimeter ) );
 			auto value = line.substr( line.find( delimeter ) + 1 );
 
-			if( key == "Navn" ) {
-				atominfo.setAtom( value, std::to_string( nummer ) );
+			std::wcout << key << L" " << value << std::endl;
+
+			if( key == L"Navn" ) {
+				atominfo.setAtom( value, std::to_wstring( nummer ) );
+			} else if( key == L"Isotop" ) {
+
+				ss.str( value );
+				while( ss.good() ) {
+					std::wstring subs;
+					getline( ss, subs, L',' );
+					if( subs != L" " || subs != L"" ) {
+						atominfo.isotoper.push_back( std::stoi( subs ) );
+					}
+				}
+
 			} else {
 				atomdetail.setTextElement( key, value );
 			}
-
-			if( debug )
-				std::cout << key << ":" << value << std::endl;
 		}
 		file.close();
 	}
@@ -507,7 +556,7 @@ void setGrundstof( int nummer, AtomDetail& atomdetail, AtomInfo& atominfo ) {
 int main( int argc, char* argv[] ) {
 
 	auto max_attempts = 10;
-	auto interval = 3;
+	auto interval = 5;
 	auto attempt_interval = 50; // ms
 
 	int width = 640, height = 480;
@@ -515,7 +564,7 @@ int main( int argc, char* argv[] ) {
 	cv::Mat sourceFeed;
 	cv::Mat cameraFeed;
 
-	cv::Rect crop(70, 0, 500, 480);
+	cv::Rect crop( 70, 0, 500, 480 );
 
 	//video capture object to acquire webcam feed
 	cv::VideoCapture capture;
@@ -528,13 +577,17 @@ int main( int argc, char* argv[] ) {
 	capture.set( CV_CAP_PROP_FRAME_HEIGHT, height );
 	cv::waitKey( 1000 );
 
-	auto track = EdgeTracking();
+	auto track = EdgeTracking( debug );
 	//track.showDebugWindows();
 
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 
-	sf::RenderWindow window( sf::VideoMode( width, height ), "KemiDetect", sf::Style::Default, settings );
+	auto style = sf::Style::Default;
+	if( !debug )
+		style = sf::Style::Fullscreen;
+
+	sf::RenderWindow window( sf::VideoMode( width, height ), "KemiDetect", style, settings );
 
 	sf::Font font;
 	if( !font.loadFromFile( "font/roboto.ttf" ) ) {
@@ -556,125 +609,25 @@ int main( int argc, char* argv[] ) {
 	capture.read( sourceFeed );
 	if( sourceFeed.data ) {
 		camera = true;
-		cv::namedWindow( "Display", CV_WINDOW_AUTOSIZE );
+		if( debug )
+			cv::namedWindow( "Display", CV_WINDOW_AUTOSIZE );
 	}
+
+	int protonerx = 0;
 
 	while( window.isOpen() ) {
 		track.resetDebugWindows();
 
-		if (camera)
+		if( camera )
 			capture.read( sourceFeed );
 
-		if( debug && !camera ) {
-			sourceFeed = imread( "kugle.jpg" );
-		}
+		//if( !camera ) {
+		//	sourceFeed = imread( "kugle.jpg" );
+		//}
 
 		auto attempt = max_attempts;
-		auto protoner = 0;
+		auto protoner = protonerx++;
 		auto neutroner = 0;
-
-		while(attempt)
-		{
-
-		if( sourceFeed.data ) {
-			cameraFeed = sourceFeed( crop );
-			track.applyImage( cameraFeed );
-			objects = track.getObjects();
-
-			auto elektroner = 0;
-
-			auto current_protoner = 0;
-			auto current_neutroner = 0;
-
-			auto skalle1 = 0;
-			auto skalle2 = 0;
-			auto skalle3 = 0;
-			auto skalle4 = 0;
-
-			for( auto& o : objects ) {
-				auto t = o.getType();
-
-				if( t == "red" ) {
-					elektroner++;
-
-					switch( o.skalle ) {
-						case 1:
-							skalle1++;
-							break;
-						case 2:
-							skalle2++;
-							break;
-						case 3:
-							skalle3++;
-							break;
-						case 4:
-							skalle4++;
-							break;
-					}
-
-				} else if( t == "black" ) {
-					current_neutroner++;
-				} else if( t == "green" ) {
-					current_protoner++;
-				}
-			}
-
-			if (current_neutroner > neutroner)
-			{
-				neutroner = current_neutroner;
-			}
-
-			if (current_protoner > protoner)
-			{
-				protoner = current_protoner;
-			}
-
-			atomcircle.setElementCount( Elektron, skalle1, 3 );
-			atomcircle.setElementCount( Elektron, skalle2 + 10, 2 );
-			atomcircle.setElementCount( Elektron, skalle3, 1 );
-			atomcircle.setElementCount( Elektron, skalle4, 0 );
-
-			atominfo.setElementCount( elektroner, Elektron );
-
-			// ladning
-			if( elektroner < protoner ) {
-				atomdetail.setTextElement( "Ladning", "Positiv" );
-			} else if( elektroner > protoner ) {
-				atomdetail.setTextElement( "Ladning", "Negativ" );
-			} else {
-				atomdetail.setTextElement( "Ladning", "Neutral" );
-			}
-
-			if( debug )
-				cv::imshow( "Display", track.getImage() );
-		}
-
-		attempt--;
-		sf::sleep(sf::milliseconds(attempt_interval));
-
-		}
-
-		atomcircle.setElementCount(Proton, protoner);
-		atomcircle.setElementCount(Neutron, neutroner);
-		atominfo.setElementCount(protoner, Proton);
-		atominfo.setElementCount(neutroner, Neutron);
-
-		// isotop
-
-		if (neutroner != protoner) {
-			atomdetail.setTextElement("Isotop", "Ja");
-		}
-		else {
-			atomdetail.setTextElement("Isotop", "Nej");
-		}
-
-		if (protoner > 0 && protoner < 21) {
-			setGrundstof(protoner, atomdetail, atominfo);
-		}
-		else {
-			atomdetail.setDefault();
-			atominfo.setDefault();
-		}
 
 		// Process events
 		sf::Event ev;
@@ -683,6 +636,112 @@ int main( int argc, char* argv[] ) {
 			if( ev.type == sf::Event::Closed )
 				window.close();
 		}
+
+		while( attempt ) {
+
+			if( sourceFeed.data ) {
+				if( camera ) {
+					cameraFeed = sourceFeed( crop );
+				} else {
+					cameraFeed = sourceFeed;
+				}
+				track.applyImage( cameraFeed );
+				objects = track.getObjects();
+
+				auto elektroner = 0;
+
+				auto current_protoner = 0;
+				auto current_neutroner = 0;
+
+				auto skalle1 = 0;
+				auto skalle2 = 0;
+				auto skalle3 = 0;
+				auto skalle4 = 0;
+
+				for( auto& o : objects ) {
+					auto t = o.getType();
+
+					if( t == "red" ) {
+						elektroner++;
+
+						switch( o.skalle ) {
+							case 1:
+								skalle1++;
+								break;
+							case 2:
+								skalle2++;
+								break;
+							case 3:
+								skalle3++;
+								break;
+							case 4:
+								skalle4++;
+								break;
+						}
+
+					} else if( t == "black" ) {
+						current_neutroner++;
+					} else if( t == "green" ) {
+						current_protoner++;
+					}
+				}
+
+				if( current_neutroner > neutroner ) {
+					neutroner = current_neutroner;
+				}
+
+				if( current_protoner > protoner ) {
+					protoner = current_protoner;
+				}
+
+				atomcircle.setElementCount( Elektron, skalle1, 3 );
+				atomcircle.setElementCount( Elektron, skalle2, 2 );
+				atomcircle.setElementCount( Elektron, skalle3, 1 );
+				atomcircle.setElementCount( Elektron, skalle4, 0 );
+
+				atominfo.setElementCount( elektroner, Elektron );
+
+				// ladning
+				if( elektroner < protoner ) {
+					atomdetail.setTextElement( L"Ladning", L"Positiv" );
+				} else if( elektroner > protoner ) {
+					atomdetail.setTextElement( L"Ladning", L"Negativ" );
+				} else {
+					atomdetail.setTextElement( L"Ladning", L"Neutral" );
+				}
+
+				if( debug )
+					cv::imshow( "Display", track.getImage() );
+			}
+
+			attempt--;
+			sf::sleep( sf::milliseconds( attempt_interval ) );
+
+		}
+
+		atomcircle.setElementCount( Proton, protoner );
+		atomcircle.setElementCount( Neutron, neutroner );
+		atominfo.setElementCount( protoner, Proton );
+		atominfo.setElementCount( neutroner, Neutron );
+
+		// isotop
+
+		if( neutroner != protoner ) {
+			atomdetail.setTextElement( L"Isotop", L"Ja" );
+			atomdetail.dont_exist = !atominfo.hasIsotop( neutroner );
+		} else {
+			atomdetail.setTextElement( L"Isotop", L"Nej" );
+			atomdetail.dont_exist = false;
+		}
+
+		if( protoner > 0 && protoner < 21 ) {
+			setGrundstof( protoner, atomdetail, atominfo );
+
+		} else {
+			atomdetail.setDefault();
+			atominfo.setDefault();
+		}
+
 		window.clear( sf::Color::White );
 
 		atominfo.draw( window );
@@ -691,12 +750,12 @@ int main( int argc, char* argv[] ) {
 
 		window.display();
 		if( debug )
-			track.showDebugWindows();
+		//track.showDebugWindows();
 
-		if( !debug )
-			sf::sleep(sf::milliseconds(interval * 1000));
-		else
-			waitKey( 1 );
+			if( !debug )
+				sf::sleep( sf::milliseconds( interval * 1000 ) );
+			else
+				waitKey( 1 );
 	}
 
 	return 0;
