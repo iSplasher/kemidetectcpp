@@ -1,4 +1,4 @@
-Navn: Kalium
+﻿Navn: Kalium
 Tilstandsform: Fast stof
 Smeltepunkt: 63,38 °C
 Kogepunkt: 759 °C

@@ -327,7 +327,6 @@ struct AtomInfo : public Drawable {
 		int xmargin = 10;
 		int margin2 = 0;
 
-		auto txt_height = atom_text.getLocalBounds().height + 10;
 		atom_text.setPosition( pos.x + xmargin, pos.y + margin );
 		atom_prot.setPosition( pos.x + xmargin, pos.y + margin + margin2 + txt_height );
 		atom_neut.setPosition( pos.x + xmargin, pos.y + margin + margin2 + txt_height * 2 );
@@ -347,6 +346,7 @@ struct AtomInfo : public Drawable {
 	sf::Text atom_elek;
 	sf::Text atom_neut;
 	sf::Text atom_prot;
+	int txt_height = 31;
 	sf::Color background = sf::Color( 98, 98, 98 );
 	sf::Color foreground = sf::Color( 98, 98, 98 );
 
@@ -506,14 +506,16 @@ void setGrundstof( int nummer, AtomDetail& atomdetail, AtomInfo& atominfo ) {
 
 int main( int argc, char* argv[] ) {
 
-	auto interval = 5;
+	auto max_attempts = 10;
+	auto interval = 3;
+	auto attempt_interval = 50; // ms
 
 	int width = 640, height = 480;
 
 	cv::Mat sourceFeed;
 	cv::Mat cameraFeed;
 
-	cv::Rect crop( 0, 0, 640, 480 );
+	cv::Rect crop(70, 0, 500, 480);
 
 	//video capture object to acquire webcam feed
 	cv::VideoCapture capture;
@@ -560,20 +562,29 @@ int main( int argc, char* argv[] ) {
 	while( window.isOpen() ) {
 		track.resetDebugWindows();
 
-		//capture.read( sourceFeed );
+		if (camera)
+			capture.read( sourceFeed );
 
 		if( debug && !camera ) {
 			sourceFeed = imread( "kugle.jpg" );
 		}
 
+		auto attempt = max_attempts;
+		auto protoner = 0;
+		auto neutroner = 0;
+
+		while(attempt)
+		{
+
 		if( sourceFeed.data ) {
-			cameraFeed = sourceFeed; // sourceFeed( crop );
+			cameraFeed = sourceFeed( crop );
 			track.applyImage( cameraFeed );
 			objects = track.getObjects();
 
 			auto elektroner = 0;
-			auto protoner = -2;
-			auto neutroner = 0;
+
+			auto current_protoner = 0;
+			auto current_neutroner = 0;
 
 			auto skalle1 = 0;
 			auto skalle2 = 0;
@@ -602,10 +613,20 @@ int main( int argc, char* argv[] ) {
 					}
 
 				} else if( t == "black" ) {
-					neutroner++;
+					current_neutroner++;
 				} else if( t == "green" ) {
-					protoner++;
+					current_protoner++;
 				}
+			}
+
+			if (current_neutroner > neutroner)
+			{
+				neutroner = current_neutroner;
+			}
+
+			if (current_protoner > protoner)
+			{
+				protoner = current_protoner;
 			}
 
 			atomcircle.setElementCount( Elektron, skalle1, 3 );
@@ -613,38 +634,46 @@ int main( int argc, char* argv[] ) {
 			atomcircle.setElementCount( Elektron, skalle3, 1 );
 			atomcircle.setElementCount( Elektron, skalle4, 0 );
 
-			atomcircle.setElementCount( Proton, protoner );
-			atomcircle.setElementCount( Neutron, neutroner );
-			atominfo.setElementCount( protoner, Proton );
 			atominfo.setElementCount( elektroner, Elektron );
-			atominfo.setElementCount( neutroner, Neutron );
 
 			// ladning
-			if( elektroner > protoner ) {
+			if( elektroner < protoner ) {
 				atomdetail.setTextElement( "Ladning", "Positiv" );
-			} else if( elektroner < protoner ) {
+			} else if( elektroner > protoner ) {
 				atomdetail.setTextElement( "Ladning", "Negativ" );
 			} else {
 				atomdetail.setTextElement( "Ladning", "Neutral" );
 			}
 
-			// isotop
-
-			if( neutroner != protoner ) {
-				atomdetail.setTextElement( "Isotop", "Ja" );
-			} else {
-				atomdetail.setTextElement( "Isotop", "Nej" );
-			}
-
-			if( protoner > 0 && protoner < 21 ) {
-				setGrundstof( protoner, atomdetail, atominfo );
-			} else {
-				atomdetail.setDefault();
-				atominfo.setDefault();
-			}
-
 			if( debug )
 				cv::imshow( "Display", track.getImage() );
+		}
+
+		attempt--;
+		sf::sleep(sf::milliseconds(attempt_interval));
+
+		}
+
+		atomcircle.setElementCount(Proton, protoner);
+		atomcircle.setElementCount(Neutron, neutroner);
+		atominfo.setElementCount(protoner, Proton);
+		atominfo.setElementCount(neutroner, Neutron);
+
+		// isotop
+
+		if (neutroner != protoner) {
+			atomdetail.setTextElement("Isotop", "Ja");
+		}
+		else {
+			atomdetail.setTextElement("Isotop", "Nej");
+		}
+
+		if (protoner > 0 && protoner < 21) {
+			setGrundstof(protoner, atomdetail, atominfo);
+		}
+		else {
+			atomdetail.setDefault();
+			atominfo.setDefault();
 		}
 
 		// Process events
@@ -665,7 +694,7 @@ int main( int argc, char* argv[] ) {
 			track.showDebugWindows();
 
 		if( !debug )
-			sf::sleep( sf::milliseconds( interval * 1000 ) );
+			sf::sleep(sf::milliseconds(interval * 1000));
 		else
 			waitKey( 1 );
 	}

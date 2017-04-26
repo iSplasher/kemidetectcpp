@@ -1,4 +1,4 @@
-Navn: Beryllium
+﻿Navn: Beryllium
 Tilstandsform: Fast stof
 Smeltepunkt: 1278,0 °C
 Kogepunkt: 2970,0 °C

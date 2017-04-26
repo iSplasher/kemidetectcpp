@@ -1,4 +1,4 @@
-Navn: Klor
+﻿Navn: Klor
 Tilstandsform: Gas
 Smeltepunkt: -101,5 °C
 Kogepunkt: -34,04 °C

@@ -1,4 +1,4 @@
-Navn: Flour
+﻿Navn: Flour
 Tilstandsform: Gas
 Smeltepunkt: -219.6 °C
 Kogepunkt: -188.12 °C

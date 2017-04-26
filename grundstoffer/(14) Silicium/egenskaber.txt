@@ -1,4 +1,4 @@
-Navn: Silicium
+﻿Navn: Silicium
 Tilstandsform: Fast stof
 Smeltepunkt: 1414 °C
 Kogepunkt: 2.9×103 °C

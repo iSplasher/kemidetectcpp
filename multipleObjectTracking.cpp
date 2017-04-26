@@ -33,7 +33,7 @@ const int FRAME_HEIGHT = 480;
 //max number of objects to be detected in frame
 const int MAX_NUM_OBJECTS = 150;
 //minimum and maximum object area
-const int MIN_OBJECT_AREA = 1 * 1;
+const int MIN_OBJECT_AREA = 0.5 * 0.5;
 const int MAX_OBJECT_AREA = 20 * 20;
 //names that will appear at the top of each window
 const string windowName = "Original Image";
@@ -226,13 +226,13 @@ int trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFe
 
 int main( int argc, char* argv[] ) {
 	//if we would like to calibrate our filter values, set to true.
-	bool calibrationMode = false;
+	bool calibrationMode = true;
 
 	//Matrix to store each frame of the webcam feed
 	Mat sourceFeed;
 	Mat cameraFeed;
 	Mat threshold;
-	Rect crop( 80, 0, 500, 480 );
+	Rect crop( 70, 0, 500, 480 );
 	Mat HSV;
 
 	if( calibrationMode ) {
@@ -255,7 +255,7 @@ int main( int argc, char* argv[] ) {
 		//store image to matrix
 		capture.read( sourceFeed );
 
-		cameraFeed = sourceFeed; //sourceFeed(crop);
+		cameraFeed = sourceFeed(crop);
 
 		src = cameraFeed;
 

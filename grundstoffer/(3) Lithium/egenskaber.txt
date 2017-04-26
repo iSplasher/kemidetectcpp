@@ -1,5 +1,5 @@
-Navn: Lithium
+﻿Navn: Lithium
 Tilstandsform: Fast stof
 Smeltepunkt: 180,54 °C
 Kogepunkt: 1342 °C
-Massefylde: 0,534 g/cm3 (fast),	0,512 g/cm3 (væske)
+Massefylde: 0,534 g/cm3 (fast)

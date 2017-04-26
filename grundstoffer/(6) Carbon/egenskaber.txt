@@ -1,4 +1,4 @@
-Navn: Carbon
+﻿Navn: Carbon
 Tilstandsform: Fast stof
 Smeltepunkt: 2,26 g/cm3
 Kogepunkt: 3550 °C

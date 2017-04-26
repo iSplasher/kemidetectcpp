@@ -1,4 +1,4 @@
-Navn: Nitrogen
+﻿Navn: Nitrogen
 Tilstandform: Gas
 Smeltepunkt: -210,1 °C
 Kogepunkt: -195,79 °C
