@@ -1,4 +1,4 @@
-﻿Navn: Natrium
+Navn: Natrium
 Tilstandsform: Fast stof
 Smeltepunkt: 97,72 °C
 Kogepunkt: 883 °C
