@@ -3,3 +3,4 @@ Tilstandsform: Fast stof
 Smeltepunkt: 650 °C
 Kogepunkt: 1090 °C
 Massefylde: 1,738 g/cm3
+Isotop: 20
