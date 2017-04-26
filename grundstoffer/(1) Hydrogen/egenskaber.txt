@@ -1,4 +1,4 @@
-﻿Navn: Hydrogen
+Navn: Hydrogen
 Tilstandsform: Gas
 Smeltepunkt: −259,14 celsius
 Kogepunkt: −252,87 celsius
