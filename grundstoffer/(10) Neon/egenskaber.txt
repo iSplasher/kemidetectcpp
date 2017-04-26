@@ -1,4 +1,4 @@
-﻿Navn: Neon
+Navn: Neon
 Tilstandsform: Gas
 Smeltepunkt: -248,59 °C
 Kogepunkt: -246,08 °C
