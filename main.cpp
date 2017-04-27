@@ -578,7 +578,7 @@ int main( int argc, char* argv[] ) {
 	cv::waitKey( 1000 );
 
 	auto track = EdgeTracking( debug );
-	//track.showDebugWindows();
+	track.showDebugWindows();
 
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
@@ -621,9 +621,9 @@ int main( int argc, char* argv[] ) {
 		if( camera )
 			capture.read( sourceFeed );
 
-		//if( !camera ) {
-		//	sourceFeed = imread( "kugle.jpg" );
-		//}
+		if( !camera ) {
+			sourceFeed = imread( "kugle.jpg" );
+		}
 
 		auto attempt = max_attempts;
 		auto protoner = protonerx++;
@@ -750,12 +750,12 @@ int main( int argc, char* argv[] ) {
 
 		window.display();
 		if( debug )
-		//track.showDebugWindows();
+			track.showDebugWindows();
 
-			if( !debug )
-				sf::sleep( sf::milliseconds( interval * 1000 ) );
-			else
-				waitKey( 1 );
+		if( !debug )
+			sf::sleep( sf::milliseconds( interval * 1000 ) );
+		else
+			waitKey( 1 );
 	}
 
 	return 0;

@@ -213,7 +213,7 @@ int trackFilteredObject( Object theObject, Mat threshold, Mat HSV, Mat& cameraFe
 
 int main( int argc, char* argv[] ) {
 	//if we would like to calibrate our filter values, set to true.
-	bool calibrationMode = true;
+	bool calibrationMode = false;
 
 	//Matrix to store each frame of the webcam feed
 	Mat sourceFeed;
@@ -242,13 +242,13 @@ int main( int argc, char* argv[] ) {
 		//store image to matrix
 		capture.read( sourceFeed );
 
-		cameraFeed = sourceFeed(crop);
+		if( !sourceFeed.data ) {
+			sourceFeed = imread( "kugle.jpg" );;
+			cameraFeed = sourceFeed;
+		} else
+			cameraFeed = sourceFeed( crop );
 
 		src = cameraFeed;
-
-		if( !src.data ) {
-			src = cameraFeed = imread( "kugle.jpg" );;
-		}
 
 		//convert frame from BGR to HSV colorspace
 		cvtColor( cameraFeed, HSV, COLOR_BGR2HSV );
