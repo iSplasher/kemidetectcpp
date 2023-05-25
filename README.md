@@ -1,6 +1,8 @@
 # KemiDetect
 
-This was developed for a school project. It was used to detect what atom structures were being built using computer vision.
+An atom structure image recognition program using OpenCV.
+
+It was developed for a school project and used to recognize atom structures built on a board using computer vision.
 See the following images:
 
 ![billede](https://github.com/iSplasher/kemidetectcpp/assets/9113348/55757080-9f71-4f1c-94a0-aea9f611ac72)
